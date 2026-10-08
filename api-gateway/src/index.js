@@ -38,6 +38,10 @@ app.use('/processed', express.static(processedDir));
 app.use('/api/upload', uploadRouter);
 app.use('/api/videos', videoRouter);
 
+app.get('/', (req, res) => {
+  res.json({ service: 'distributed-media-backend', status: 'healthy', timestamp: new Date() });
+});
+
 app.get('/health', (req, res) => {
   res.json({ service: 'api-gateway', status: 'healthy', timestamp: new Date() });
 });
@@ -94,6 +98,6 @@ try {
   console.warn('[API-Gateway WS] Redis subscriber init notice:', redisErr.message);
 }
 
-server.listen(PORT, () => {
-  console.log(`[API-Gateway] Server running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[API-Gateway] Server running on port ${PORT}`);
 });

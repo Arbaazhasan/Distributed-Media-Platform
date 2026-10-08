@@ -14,8 +14,8 @@ const npmCmd = isWin ? 'npm.cmd' : 'npm';
 // - API Gateway runs on process.env.PORT, serving both REST endpoints and Socket.IO signaling
 // - Worker Node runs concurrently on the same instance, sharing /tmp for FFmpeg transcoding and Cloudinary upload
 const services = [
-  { name: 'API-GATEWAY', dir: 'api-gateway', cmd: npmCmd, args: ['start'] },
-  { name: 'WORKER-NODE', dir: 'worker-node', cmd: npmCmd, args: ['start'] },
+  { name: 'API-GATEWAY', dir: 'api-gateway', cmd: process.execPath, args: ['src/index.js'] },
+  { name: 'WORKER-NODE', dir: 'worker-node', cmd: process.execPath, args: ['src/index.js'] },
 ];
 
 console.log('[Cloud Backend Runner] Launching backend services (API Gateway + Socket.IO + Worker Node)...');
@@ -23,7 +23,6 @@ console.log('[Cloud Backend Runner] Launching backend services (API Gateway + So
 services.forEach((service) => {
   const child = spawn(service.cmd, service.args, {
     cwd: path.join(rootDir, service.dir),
-    shell: true,
     stdio: 'inherit',
     env: { ...process.env },
   });

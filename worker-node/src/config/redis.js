@@ -3,9 +3,20 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const createRedisClient = () => {
-  const redisUrl = process.env.REDIS_URL;
+  let redisUrl = process.env.REDIS_URL;
   if (redisUrl) {
-    const isTls = redisUrl.startsWith('rediss://');
+    redisUrl = redisUrl.trim();
+    // Auto-extract URL if user pasted the full 'redis-cli --tls -u ...' command
+    const urlMatch = redisUrl.match(/(rediss?:\/\/[^\s"']+)/);
+    if (urlMatch) {
+      redisUrl = urlMatch[1];
+    }
+    // Upstash and cloud providers require TLS
+    const isTls = redisUrl.startsWith('rediss://') || redisUrl.includes('upstash.io');
+    if (isTls && redisUrl.startsWith('redis://')) {
+      redisUrl = redisUrl.replace(/^redis:\/\//, 'rediss://');
+    }
+
     return new Redis(redisUrl, {
       maxRetriesPerRequest: null,
       tls: isTls ? { rejectUnauthorized: false } : undefined,

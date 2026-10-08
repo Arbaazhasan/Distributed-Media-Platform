@@ -65,10 +65,14 @@ subscriber.on('message', (channel, message) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.json({ service: 'signaling-server', status: 'healthy', timestamp: new Date() });
+});
+
 app.get('/health', (req, res) => {
   res.json({ service: 'signaling-server', status: 'healthy', timestamp: new Date() });
 });
 
-server.listen(PORT, () => {
-  console.log(`[Signaling-Server] Running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Signaling-Server] Running on port ${PORT}`);
 });
