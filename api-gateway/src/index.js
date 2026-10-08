@@ -34,9 +34,11 @@ app.use(express.urlencoded({ extended: true }));
 const processedDir = path.resolve(__dirname, '../../processed');
 app.use('/processed', express.static(processedDir));
 
-// Routes
+// Routes (support both /api/* and root /* paths to prevent 404 if /api is omitted in client env)
 app.use('/api/upload', uploadRouter);
+app.use('/upload', uploadRouter);
 app.use('/api/videos', videoRouter);
+app.use('/videos', videoRouter);
 
 app.get('/', (req, res) => {
   res.json({ service: 'distributed-media-backend', status: 'healthy', timestamp: new Date() });
