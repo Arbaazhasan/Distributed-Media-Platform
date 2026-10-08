@@ -6,7 +6,9 @@
   "description": "Distributed Media Processing Platform Monorepo",
   "scripts": {
     "start": "node scripts/start-all.js",
+    "start:backend": "node scripts/start-backend.js",
     "install:all": "npm install --prefix api-gateway && npm install --prefix worker-node && npm install --prefix signaling-server && npm install --prefix client",
+    "install:backend": "npm install --prefix api-gateway && npm install --prefix worker-node",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   }

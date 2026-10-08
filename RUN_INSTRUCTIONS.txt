@@ -1,0 +1,90 @@
+================================================================================
+          DISTRIBUTED MEDIA PROCESSING PLATFORM - HOW TO RUN GUIDE
+================================================================================
+
+This project is a Distributed Media Processing Architecture consisting of 4 services:
+  1. API Gateway (Node.js/Express) - Port 3000
+  2. Signaling Server (Socket.io)  - Port 4000
+  3. Worker Node (BullMQ + FFmpeg) - Processing Queue Worker
+  4. Client (React + Vite)        - Port 5173
+
+--------------------------------------------------------------------------------
+PREREQUISITES
+--------------------------------------------------------------------------------
+- Node.js (v18+ recommended) & npm
+- Docker Desktop (for Redis container service)
+- FFmpeg (installed and added to system PATH for video transcoding)
+
+--------------------------------------------------------------------------------
+STEP 1: INSTALL ALL DEPENDENCIES
+--------------------------------------------------------------------------------
+Run the monorepo installation command from the project root:
+
+    npm run install:all
+
+This automatically runs `npm install` inside:
+  - api-gateway/
+  - worker-node/
+  - signaling-server/
+  - client/
+
+--------------------------------------------------------------------------------
+STEP 2: ENVIRONMENT CONFIGURATION
+--------------------------------------------------------------------------------
+Ensure a `.env` file exists in the root directory (and in subfolders if needed):
+
+    MONGO_URI=mongodb+srv://<user>:<password>@cluster0.mongodb.net/media_platform
+    DB_CONNECTION=mongodb+srv://<user>:<password>@cluster0.mongodb.net/media_platform
+    
+    CLOUDINARY_CLOUD_NAME=your_cloud_name
+    CLOUDINARY_API_KEY=your_api_key
+    CLOUDINARY_API_SECRET=your_api_secret
+
+    PORT=3000
+    SIGNALING_PORT=4000
+
+--------------------------------------------------------------------------------
+STEP 3: START DOCKER INFRASTRUCTURE (REDIS & MONGODB)
+--------------------------------------------------------------------------------
+Make sure Docker Desktop is open and running, then start the background services:
+
+    npm run docker:up
+
+Or manually:
+    docker-compose up -d
+
+This starts:
+  - Redis (Port 6379) - Used for BullMQ queues & Socket.io Pub/Sub
+  - MongoDB (Port 27017) - Local database fallback
+  - RabbitMQ (Port 5672/15672) - Message Broker
+
+--------------------------------------------------------------------------------
+STEP 4: START ALL SERVICES AND FRONTEND
+--------------------------------------------------------------------------------
+Start all microservices and the client UI simultaneously by running:
+
+    npm start
+
+This executes `node scripts/start-all.js` which spawns:
+  - API Gateway    --> http://localhost:3000
+  - Signaling Server --> http://localhost:4000
+  - Worker Node     --> Listening on BullMQ queue "video-processing"
+  - React Client    --> http://localhost:5173
+
+--------------------------------------------------------------------------------
+STEP 5: ACCESS THE APPLICATION
+--------------------------------------------------------------------------------
+Open your browser and navigate to:
+
+    http://localhost:5173
+
+You can upload videos, observe real-time transcoding progress, and stream 
+processed resolutions!
+
+--------------------------------------------------------------------------------
+STOPPING THE PROJECT
+--------------------------------------------------------------------------------
+To stop the services:
+  1. Press Ctrl + C in the terminal where `npm start` is running.
+  2. Run `npm run docker:down` to stop Docker containers.
+================================================================================

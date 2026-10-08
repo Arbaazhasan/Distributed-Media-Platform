@@ -9,12 +9,15 @@ import subscriber from './config/redis.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({
+  origin: (origin, callback) => callback(null, true),
+  credentials: true,
+}));
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: true,
     methods: ['GET', 'POST'],
     credentials: true,
   },
